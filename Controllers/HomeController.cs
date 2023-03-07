@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 public class HomeController : Controller {
     private readonly HttpClient _client = new HttpClient();
     private const string ApiUrl = "https://api.ivi.ru/mobileapi/autocomplete/common/v7/";
 
-    public ActionResult Index() {
+    public IActionResult Index() {
         return View();
     }
 
@@ -18,7 +18,7 @@ public class HomeController : Controller {
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync();
         var result = JsonSerializer.Deserialize<SearchResult>(content);
-        return Json(result.Results, JsonRequestBehavior.AllowGet);
+        return Json(result.Results);
     }
 }
 

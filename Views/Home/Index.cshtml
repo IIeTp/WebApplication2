@@ -1,31 +1,52 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewData["Title"] = "Home Page";
 }
 
-<h2>Поиск на ivi.ru</h2>
+<div class="text-center">
+    <h1 class="display-4">Search Movies and TV Shows</h1>
+</div>
 
-<form id="search-form">
-    <label for="search-input">Введите запрос:</label>
-    <input type="text" id="search-input" name="query">
-    <button type="submit">Искать</button>
-</form>
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <form id="searchForm">
+            <div class="form-group">
+                <label for="query">Search:</label>
+                <input type="text" class="form-control" id="query">
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+</div>
 
 <div id="results"></div>
 
-@section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@section scripts {
     <script>
-        $('#search-form').submit(function(e) {
-            e.preventDefault();
-            var query = $('#search-input').val();
-            var apiUrl = '/Home/Search?query=' + encodeURIComponent(query);
-            $.get(apiUrl, function(data) {
-                var $resultList = $('<ul>');
-                data.forEach(function(result) {
-                    var $resultItem = $('<li>').text(result.name);
-                    $resultList.append($resultItem);
+        $(function () {
+            $('#searchForm').submit(function (event) {
+                event.preventDefault();
+                var query = $('#query').val();
+                $.get('/Home/Search', { query: query }, function (data) {
+                    $('#results').empty();
+                    for (var i = 0; i < data.length; i++) {
+                        var item = data[i];
+                        var result = $('<div/>', {
+                            class: 'result'
+                        }).appendTo('#results');
+                        $('<div/>', {
+                            text: item.name,
+                            class: 'name'
+                        }).appendTo(result);
+                        $('<div/>', {
+                            text: item.title,
+                            class: 'title'
+                        }).appendTo(result);
+                        $('<div/>', {
+                            text: item.orig_title,
+                            class: 'orig_title'
+                        }).appendTo(result);
+                    }
                 });
-                $('#results').html($resultList);
             });
         });
     </script>
