@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 public class HomeController : Controller {
     private readonly HttpClient _client = new HttpClient();
@@ -8,11 +10,12 @@ public class HomeController : Controller {
     public IActionResult Index() {
         return View();
     }
+
     public IActionResult Privacy() {
         return View();
     }
 
-    [HttpGet]
+    [HttpPost]
     public async Task<JsonResult> Search(string query) {
         var requestUrl = $"{ApiUrl}?query={query}&fields=id,name,object_type,title,year,years,orig_title&app_version=2182";
         var response = await _client.GetAsync(requestUrl);
