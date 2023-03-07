@@ -20,13 +20,18 @@
 
 <div id="results"></div>
 
+<div id="jsonResponse" style="display: none;"></div>
+
 @section scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(function () {
             $('#searchForm').submit(function (event) {
                 event.preventDefault();
                 var query = $('#query').val();
-                $.get('/Home/Search', { query: query }, function (data) {
+                var requestUrl = `${window.location.origin}/Home/Search?query=${encodeURIComponent(query)}`;
+                console.log(requestUrl);
+                $.get(requestUrl, function (data) {
                     $('#results').empty();
                     for (var i = 0; i < data.length; i++) {
                         var item = data[i];
@@ -34,18 +39,20 @@
                             class: 'result'
                         }).appendTo('#results');
                         $('<div/>', {
-                            text: item.name,
+                            text: item.Name,
                             class: 'name'
                         }).appendTo(result);
                         $('<div/>', {
-                            text: item.title,
+                            text: item.Title,
                             class: 'title'
                         }).appendTo(result);
                         $('<div/>', {
-                            text: item.orig_title,
+                            text: item.Orig_title,
                             class: 'orig_title'
                         }).appendTo(result);
                     }
+                    // Show formatted JSON response
+                    $('#jsonResponse').text(JSON.stringify(data, null, 4)).show();
                 });
             });
         });

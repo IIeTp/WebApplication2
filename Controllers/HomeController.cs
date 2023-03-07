@@ -1,13 +1,14 @@
-﻿using System.Net.Http;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 
 public class HomeController : Controller {
     private readonly HttpClient _client = new HttpClient();
     private const string ApiUrl = "https://api.ivi.ru/mobileapi/autocomplete/common/v7/";
 
     public IActionResult Index() {
+        return View();
+    }
+    public IActionResult Privacy() {
         return View();
     }
 
