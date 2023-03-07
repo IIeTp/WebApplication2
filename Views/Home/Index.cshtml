@@ -2,49 +2,35 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Search Movies and TV Shows</h1>
-</div>
-
 <div class="row">
-    <div class="col-md-6 offset-md-3">
+    <div class="col-md-6">
         <form id="searchForm">
-            <div class="form-group">
-                <label for="query">Search:</label>
-                <input type="text" class="form-control" id="query">
-            </div>
-            <button type="submit" class="btn btn-primary">Search</button>
+            <div class="input-group">
+                <input type="text" name="query" id="searchInput" class="form-control" placeholder="Search for...">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit">Go!</button>
+                </span>
+            </div><!-- /input-group -->
         </form>
-    </div>
-</div>
+    </div><!-- /.col-md-6 -->
+</div><!-- /.row -->
 
-<div id="results"></div>
+<div id="searchResults"></div>
 
-@section scripts {
+@section Scripts {
     <script>
-        $(function () {
-            $('#searchForm').submit(function (event) {
-                event.preventDefault();
-                var query = $('#query').val();
-                $.get('/Home/Search', { query: query }, function (data) {
-                    $('#results').empty();
-                    for (var i = 0; i < data.length; i++) {
-                        var item = data[i];
-                        var result = $('<div/>', {
-                            class: 'result'
-                        }).appendTo('#results');
-                        $('<div/>', {
-                            text: item.name,
-                            class: 'name'
-                        }).appendTo(result);
-                        $('<div/>', {
-                            text: item.title,
-                            class: 'title'
-                        }).appendTo(result);
-                        $('<div/>', {
-                            text: item.orig_title,
-                            class: 'orig_title'
-                        }).appendTo(result);
+        $(document).ready(function () {
+            $('#searchForm').submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '@Url.Action("Search", "Home")',
+                    type: 'POST',
+                    data: { query: $('#searchInput').val() },
+                    success: function (data) {
+                        $('#searchResults').empty();
+                        $.each(data, function (i, item) {
+                            $('#searchResults').append('<div>' + item.title + '</div>');
+                        });
                     }
                 });
             });
