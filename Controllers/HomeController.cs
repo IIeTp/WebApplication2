@@ -1,26 +1,37 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using WebApplication2.Models;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
 
-namespace WebApplication2.Controllers {
-    public class HomeController : Controller {
-        private readonly ILogger<HomeController> _logger;
+public class HomeController : Controller {
+    private readonly HttpClient _client = new HttpClient();
+    private const string ApiUrl = "https://api.ivi.ru/mobileapi/autocomplete/common/v7/";
 
-        public HomeController(ILogger<HomeController> logger) {
-            _logger = logger;
-        }
-
-        public IActionResult Index() {
-            return View();
-        }
-
-        public IActionResult Privacy() {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error() {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+    public ActionResult Index() {
+        return View();
     }
+
+    [HttpGet]
+    public async Task<JsonResult> Search(string query) {
+        var requestUrl = $"{ApiUrl}?query={query}&fields=id,name,object_type,title,year,years,orig_title&app_version=2182";
+        var response = await _client.GetAsync(requestUrl);
+        response.EnsureSuccessStatusCode();
+        var content = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<SearchResult>(content);
+        return Json(result.Results, JsonRequestBehavior.AllowGet);
+    }
+}
+
+public class SearchResult {
+    public SearchResultItem[] Results { get; set; }
+}
+
+public class SearchResultItem {
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Object_type { get; set; }
+    public string Title { get; set; }
+    public int Year { get; set; }
+    public string Years { get; set; }
+    public string Orig_title { get; set; }
 }

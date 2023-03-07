@@ -1,8 +1,32 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewBag.Title = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<h2>Поиск на ivi.ru</h2>
+
+<form id="search-form">
+    <label for="search-input">Введите запрос:</label>
+    <input type="text" id="search-input" name="query">
+    <button type="submit">Искать</button>
+</form>
+
+<div id="results"></div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $('#search-form').submit(function(e) {
+            e.preventDefault();
+            var query = $('#search-input').val();
+            var apiUrl = '/Home/Search?query=' + encodeURIComponent(query);
+            $.get(apiUrl, function(data) {
+                var $resultList = $('<ul>');
+                data.forEach(function(result) {
+                    var $resultItem = $('<li>').text(result.name);
+                    $resultList.append($resultItem);
+                });
+                $('#results').html($resultList);
+            });
+        });
+    </script>
+}
